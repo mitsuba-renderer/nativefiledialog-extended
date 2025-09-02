@@ -5,3 +5,8 @@
 
 # Mac OS X rubbish
 .DS_Store
+
+libnfd.a
+nfd.lib
+*.cmake
+CMakeFiles
