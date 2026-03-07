@@ -843,16 +843,12 @@ nfdresult_t ReadResponseResults(DBusMessage* msg, DBusMessageIter& resultsIter) 
     dbus_uint32_t resp_code;
     dbus_message_iter_get_basic(&iter, &resp_code);
     if (resp_code != 0) {
-        if (resp_code == 1) {
-            // User pressed cancel
-            return NFD_CANCEL;
-        } else {
-            // Some error occurred
-            NFDi_SetFormattedError(
-                "D-Bus file dialog interaction was ended abruptly with response code %u.",
-                resp_code);
-            return NFD_ERROR;
-        }
+        // Only response codes 1 and 2 exist. 1 means the user pressed "cancel" and 2 means that the
+        // user interaction ended in some other way. We treat 2 also as a cancel, because it is triggered
+        // by mundane user actions, such as closing the dialog via Esc or a window manager shortcut on
+        // some systems and should therefore not be treated like erroneous behavior.
+        // See https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Request.html
+        return NFD_CANCEL;
     }
     // User successfully responded
     if (!dbus_message_iter_next(&iter)) {
